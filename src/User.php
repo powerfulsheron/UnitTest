@@ -6,10 +6,7 @@
  * Time: 17:58
  */
 
-namespace swag;
-
-
-class User
+final class User
 {
     private $email;
     private $nom;

@@ -6,9 +6,6 @@
  * Time: 17:58
  */
 
-namespace swag;
-
-
 class Product
 {
     private $nom;
@@ -63,7 +60,7 @@ class Product
     public function isValid()
     {
         if ((isset($this->nom) && trim($this->nom)!== '')
-        && (isset($this->owner) && $this->isValid())) {
+        && (isset($this->owner) && $this->owner->isValid())) {
             return true;
         }else{
             return false;
