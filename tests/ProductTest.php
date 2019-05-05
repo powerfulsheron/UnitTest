@@ -79,6 +79,16 @@ final class ProductTest extends TestCase
 
     // USER
 
+    public function testOwnerIsUserInstance()
+    {
+        $this->assertInstanceOf(User::class, $this->getProduct()->getOwner());
+    }
+
+    public function testOwnerIsValid()
+    {
+        $this->assertTrue($this->product->getOwner()->isValid());
+    }
+
     public function testIsValidUserProductName(): void
     {
         $this->product->setOwner(new User($this->validSurname,$this->emptyValue,$this->nullValue,$this->notValidAge));
@@ -131,7 +141,8 @@ final class ProductTest extends TestCase
 
     protected  function setUp(): void
     {
-        $this->user = new User("lorenzo.canavaggio@laposte.net","canavaggio","lorenzo",15);
+        $this->user = $this->createMock(User::class);
+        $this->user->method('isValid')->willReturn(true);
         $this->product = new Product("produit le sang",$this->user);
     }
 }

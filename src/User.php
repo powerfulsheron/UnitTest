@@ -6,7 +6,7 @@
  * Time: 17:58
  */
 
-final class User
+class User
 {
     private $email;
     private $nom;

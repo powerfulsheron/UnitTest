@@ -16,7 +16,7 @@ class Exchange
     private $dateDebut;
     private $dateFin;
 
-    private $mail;
+    private $emailSender;
     private $connection;
 
     /**
@@ -34,6 +34,9 @@ class Exchange
         $this->owner = $owner;
         $this->dateDebut = $dateDebut;
         $this->dateFin = $dateFin;
+
+        $this->emailSender = new PHPMailer(true);
+        $this->connection = new PDO("mysql:host=localhost;dbname=myDB", "admin", "root");
     }
 
     /**
@@ -116,12 +119,68 @@ class Exchange
         $this->dateFin = $dateFin;
     }
 
-    // SET UP
-
-    protected  function setUp(): void
+    /**
+     * @return PHPMailer
+     */
+    public function getEmailSender(): PHPMailer
     {
-        $this->mail = new PHPMailer(true);
-        $this->connection = new PDO("mysql:host=localhost;dbname=myDB", "admin", "root");
+        return $this->emailSender;
+    }
+
+    /**
+     * @param PHPMailer $emailSender
+     */
+    public function setEmailSender(PHPMailer $emailSender): void
+    {
+        $this->emailSender = $emailSender;
+    }
+
+    /**
+     * @return PDO
+     */
+    public function getConnection(): PDO
+    {
+        return $this->connection;
+    }
+
+    /**
+     * @param PDO $connection
+     */
+    public function setConnection(PDO $connection): void
+    {
+        $this->connection = $connection;
+    }
+
+    /**
+     * @return bool
+     */
+    public function save()
+    {
+        if (!($this->getProduit()->isValid() &&
+            $this->getProduit()->getOwner()->isValid() &&
+            $this->getDateDebut() > new DateTime() &&
+            $this->getDateFin() > $this->getDateDebut())) {
+            return false;
+        }
+        if ($this->getReceiver()->getAge() < 18) {
+            $this->emailSender->setFrom("lorenzo.canavaggio@laposte.net");
+            $this->emailSender->addAddress($this->receiver->getEmail());
+            $this->emailSender->Subject = 'Your order';
+            $this->emailSender->Body = "Wesh le gang wesh c'est kois les bails";
+            $this->emailSender->addAddress('ellen@example.com');
+            $this->emailSender->send();
+        }
+        try {
+            $this->connection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+            $sql = "INSERT INTO exchange (productName, receiverMail, dateDebut, dateFin)
+            VALUES ($this->produit()->getNom(), $this->receiver->getEmail(), $this->dateDebut, $this->dateFin)";
+            $this->connection->exec($sql);
+            return true;
+        }
+        catch(PDOException $e) {
+            echo $e->getMessage();
+            return false;
+        }
     }
 
 }
