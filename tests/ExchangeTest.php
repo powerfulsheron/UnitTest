@@ -13,6 +13,7 @@ final class ExchangeTest extends TestCase
     public $user;
     public $exchange;
     public $receiver;
+    public $owner;
     public $floatValidValue = 15.5;
     public $boolValue = true;
     public $arrayValue = ["lorenzo"];
@@ -30,7 +31,14 @@ final class ExchangeTest extends TestCase
     public $DB_PASSWD = "root";
     public $DB_DBNAME = "myDB";
 
-    // CONNECTION
+
+    // RECEIVER
+
+    public function testIsValidReceiver()
+    {
+        $this->exchange->setReceiver($this->receiver);
+        $this->assertTrue($this->exchange->save());
+    }
 
     public function testIsSaveEmptyExchangeReceiver()
     {
@@ -81,6 +89,12 @@ final class ExchangeTest extends TestCase
     }
     // PRODUIT
 
+    public function testIsValidProduit()
+    {
+        $this->exchange->setProduit($this->product);
+        $this->assertTrue($this->exchange->save());
+    }
+
     public function testIsSaveEmptyExchangeProduit()
     {
         $this->exchange->setProduit($this->emptyValue);
@@ -130,6 +144,12 @@ final class ExchangeTest extends TestCase
     }
 
     // OWNER
+
+    public function testIsValidOwner()
+    {
+        $this->exchange->setOwner($this->owner);
+        $this->assertTrue($this->exchange->save());
+    }
 
     public function testIsSaveEmptyExchangeOwner()
     {
@@ -457,12 +477,5 @@ final class ExchangeTest extends TestCase
     {
         $this->assertInstanceOf( PDO::class,  $this->exchange->getConnection());
     }
-
-
-
-    // Reste à tester :
-    // Le save ne se fait pas si un des attributs est non reseigné ou de mauvais type (pour chaque)
-    // Le receiver mineur
-    // La Connection
 
 }
