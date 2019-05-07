@@ -22,6 +22,7 @@ final class ExchangeTest extends TestCase
     public $emptyValue = "";
     public $validName = "canavaggio";
     public $validSurame = "lorenzo";
+    public $validMail = "lorenzo.canavaggio@laposte.net";
 
     static private $pdo = null;
     private $conn = null;
@@ -415,7 +416,7 @@ final class ExchangeTest extends TestCase
         $this->product->setOwner($this->user);
         $this->product->expects()->method('isValid')->willReturn(true);
 
-        $this->exchange = new Exchange();
+        $this->exchange = $this->createMock(Exchange::class);
         $this->exchange
             ->setProduct($this->product)
             ->setReceiver($this->receiver)
@@ -458,6 +459,15 @@ final class ExchangeTest extends TestCase
         $this->assertInstanceOf(\PHPMailer\PHPMailer\PHPMailer::class, $this->exchange->getEmailSender());
     }
 
+    public function testExchangeMailIfReceiverMinor(){
+        $this->receiver=new User("lorenzo.canavaggio@laposte.net","lorenzo","canavaggio",15);
+        $this->exchange = $this->createMock(Exchange::class);
+        $emailSender = $this->createMock(PHPMailer::class);
+        $emailSender->expects($this->once()->method('send'));
+        $this->exchange->setReceiver($this->receiver);
+        $this->exchange->setEmailSender($emailSender);
+        $this->exchange->save();
+    }
 
     // EXCHANGE DB
 
