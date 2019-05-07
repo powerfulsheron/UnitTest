@@ -1,6 +1,7 @@
 <?php
 
 use PHPUnit\Framework\TestCase;
+use PHPUnit\DbUnit\TestCaseTrait;
 
 require __DIR__ . "/../src/User.php";
 require __DIR__ . "/../src/Product.php";
@@ -12,7 +13,6 @@ final class ExchangeTest extends TestCase
     public $user;
     public $exchange;
     public $receiver;
-
     public $floatValidValue = 15.5;
     public $boolValue = true;
     public $arrayValue = ["lorenzo"];
@@ -21,6 +21,15 @@ final class ExchangeTest extends TestCase
     public $emptyValue = "";
     public $validName = "canavaggio";
     public $validSurame = "lorenzo";
+
+    static private $pdo = null;
+    private $conn = null;
+
+    public $DB_DSN = "mysql:host=localhost;dbname=myDB";
+    public $DB_USER = "froger";
+    public $DB_PASSWD = "R277306R";
+    public $DB_DBNAME = "myDB";
+
 
     // SET UP
 
@@ -83,10 +92,24 @@ final class ExchangeTest extends TestCase
 
     // EXCHANGE DB
 
+    public function testDbConnection()
+    {
+        if ($this->conn === null) {
+            if (self::$pdo == null) {
+                self::$pdo = new PDO($this->DB_DSN, $this->DB_USER, $this->DB_PASSWD);
+            }
+            $this->conn = $this->createDefaultDBConnection(self::$pdo, $this->DB_DBNAME);
+        }
+
+        return $this->conn;
+    }
+
     public function testExchangeConnectionIsPDOInstance()
     {
         $this->assertInstanceOf( PDO::class,  $this->exchange->getConnection());
     }
+
+
 
     // Reste à tester :
     // Le save ne se fait pas si un des attributs est non reseigné ou de mauvais type (pour chaque)
